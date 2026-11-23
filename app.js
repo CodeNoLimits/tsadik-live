@@ -239,7 +239,7 @@
     if(!to||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){f.email.focus();return}
     var ok=function(){f.querySelector('.subok').hidden=false};
     if(/^https?:/.test(to)){var fd=new FormData();fd.append('email',em);fd.append('rythme',r);fd.append('langue',document.documentElement.lang);fetch(to,{method:'POST',body:fd,headers:{Accept:'application/json'}}).then(ok).catch(ok)}
-    else{location.href='mailto:'+to+'?subject='+encodeURIComponent('Hilloulot — '+r)+'&body='+encodeURIComponent(em+' · '+r);ok()}});
+    else{location.href='mailto:'+to+'?subject='+encodeURIComponent('tsadik.live — '+r)+'&body='+encodeURIComponent(em+' · '+r);ok()}});
 })();
 
 /* v7 reperes */
@@ -331,8 +331,11 @@ var R7=(function(){
     var cd=q('[data-cd]'),eve=q('.eve');
     if(jour.length){hero.classList.add('jour7');if(cd)cd.hidden=true;if(eve)eve.hidden=true}
     else{if(cd)cd.dataset.cd=x.i+'T00:00:00+02:00';if(eve)eve.textContent=T.rien}
-    var bg=q('.bg img'),ph=x.b||hero.dataset.saba;if(bg&&ph){var pre=new Image();pre.onload=function(){bg.src=ph;hero.classList.add('fond7');hero.classList.toggle('sab7',!x.b)};pre.src=ph}
-    var cr=q('.cr7');if(cr){cr.hidden=false;cr.textContent='';if(x.b){cr.textContent=x.c||''}else{var ca=E('a','',hero.dataset.sabat);ca.href=hero.dataset.sabal;ca.target='_blank';ca.rel='noopener';cr.appendChild(ca)}}
+    // fond : photo du tsadik ; sinon essai comparé 90 % Kotel / 10 % kever de Rabbi Israël, tirage gardé par visiteur
+    var bg=q('.bg img'),g='';if(!x.b){try{g=localStorage.getItem('fond7')}catch(e){}if(g!=='k'&&g!=='s'){g=Math.random()<.9?'k':'s';try{localStorage.setItem('fond7',g)}catch(e){}}var fo=(location.search.match(/[?&]fond=([ks])/)||[])[1];if(fo)g=fo}
+    var ph=x.b||(g==='s'?hero.dataset.saba:hero.dataset.kotel);if(bg&&ph){var pre=new Image();pre.onload=function(){bg.src=ph;hero.classList.add('fond7');hero.classList.toggle('sab7',g==='s');hero.classList.toggle('kot7',g==='k')};pre.src=ph}
+    var cf=document.querySelector('.crf7');if(cf&&g){cf.hidden=false;var ca=cf.querySelector('a');if(g==='s'){ca.textContent=hero.dataset.sabat;ca.href=hero.dataset.sabal}}
+    if(g&&!fo&&!sim&&!navigator.webdriver&&navigator.sendBeacon){var vu=0,t0=document.hidden?0:Date.now(),fini=0,envoi=function(){if(fini)return;if(t0){vu+=Date.now()-t0;t0=0}if(vu<1000)return;fini=1;navigator.sendBeacon('https://hilloulot.dreamnovamcp.com/mesure',JSON.stringify({v:g,s:Math.min(1800,Math.round(vu/1000))}))};document.addEventListener('visibilitychange',function(){if(document.hidden){if(t0){vu+=Date.now()-t0;t0=0}}else if(!fini)t0=Date.now()});addEventListener('pagehide',envoi)}
     var ul=E('ul','au7');
     if(jour.length>1){var li=E('li','au7t',T.aussi);ul.appendChild(li);jour.slice(1,9).forEach(function(y){var l=E('li'),a=E('a','',y.n);a.href=y.u;l.appendChild(a);ul.appendChild(l)})}
     if(jour.length&&suite){var s=E('li','au7s');s.appendChild(E('span','',T.venir+' · '+suite.d.replace(/ 5787| תשפ״ז/,'')+' '));var sa=E('a','',suite.n);sa.href=suite.u;s.appendChild(sa);ul.appendChild(s)}
@@ -350,6 +353,96 @@ var R7=(function(){
   inp.addEventListener('keydown',function(e){var n=cur.length;if(e.key==='ArrowDown'||e.key==='ArrowUp'){if(!n)return;e.preventDefault();act=(act+(e.key==='ArrowDown'?1:n-1)+(act<0&&e.key==='ArrowUp'?1:0))%n;[].forEach.call(ul.children,function(l,i){l.classList.toggle('on',i===act);l.setAttribute('aria-selected',i===act)});inp.setAttribute('aria-activedescendant','rc7-'+act)}else if(e.key==='Escape'){ul.hidden=true;inp.setAttribute('aria-expanded','false')}});
   f.addEventListener('submit',function(e){e.preventDefault();if(!inp.value.trim())return;charge().then(function(){montre();setTimeout(function(){var x=cur[Math.max(act,0)];if(x)location.href=x.u},60)})});
   document.addEventListener('click',function(e){if(!f.contains(e.target))ul.hidden=true});
+})();
+/* Prototypes A et B (23/11/2026, demande de David) : ?proto=a (tefi.la, roue en bas) · ?proto=b (tsadik.live, roue en haut) · ?proto=0 pour quitter. Gardé le temps de la visite. */
+(function(){
+  var q=(location.search.match(/[?&]proto=([ab0])/)||[])[1],P;try{if(q)sessionStorage.setItem('proto7',q);P=sessionStorage.getItem('proto7')}catch(e){P=q}
+  if(!P)P=/(^|\.)tefi\.la$/.test(location.hostname)?'a':/(^|\.)tsadik\.live$/.test(location.hostname)?'b':'';if(P!=='a'&&P!=='b')return;var H=document.documentElement,L=H.lang,rtl=H.dir==='rtl';H.classList.add('pr7','pr7'+P);
+  var mn=document.querySelector('.mnav'),br=document.querySelector('.brand');if(!mn)return;
+  var T={fr:['Agenda','Rayons','Mon espace','Accueil'],en:['Agenda','Categories','My space','Home'],he:['לוח וזמנים','כל הקטגוריות','האזור האישי','הילולות']}[L]||['Agenda','Rayons','Mon espace','Accueil'];
+  var base=br?br.getAttribute('href'):'./',it=[[T[3],base]].concat([].map.call(mn.querySelectorAll('a'),function(a){return [a.textContent.trim(),a.getAttribute('href')]}),[[T[0],base+'agenda/'],[T[1],base+'rayons/'],[T[2],'https://hilloulot.dreamnovamcp.com/']]);
+  var nav=document.createElement('nav');nav.className='roue7';nav.setAttribute('aria-label',br?br.textContent:'');var cyl=document.createElement('div');cyl.className='cyl7';nav.appendChild(cyl);var lens=document.createElement('i');lens.className='len7';lens.setAttribute('aria-hidden','true');nav.appendChild(lens);
+  var ici=location.pathname.replace(/index\.html$/,''),N=it.length,A=360/N,cur=0,els=it.map(function(x,i){var a=document.createElement('a');a.href=x[1];a.textContent=x[0];a.draggable=false;try{if(new URL(a.href).pathname===ici&&new URL(a.href).host===location.host){cur=i;a.setAttribute('aria-current','page')}}catch(e){}cyl.appendChild(a);return a});
+  var tk=[];for(var k=0;k<N*6;k++){var t=document.createElement('s');t.setAttribute('aria-hidden','true');if(k%6===0)t.className='gr';cyl.appendChild(t);tk.push(t)}
+  (P==='b'?document.querySelector('.hdr'):document.body).insertAdjacentElement(P==='b'?'afterend':'beforeend',nav);
+  var ang=-cur*A,v=0,raf=0,dr=null,bouge=0,dern=cur,rm=matchMedia('(prefers-reduced-motion: reduce)').matches,sens=rtl?-1:1;
+  function larg(){return nav.clientWidth}
+  function rendu(){var R=Math.max(196,Math.min(larg()*.54,400)),c=Math.PI/180;
+    els.forEach(function(e,i){var a=((ang+i*A)%360+540)%360-180,x=Math.sin(a*c)*R*sens,z=Math.cos(a*c),k=Math.max(0,z);e.style.transform='translate(-50%,-50%) translateX('+x.toFixed(1)+'px) rotateY('+(a*.82*sens).toFixed(1)+'deg) scale('+(.62+.38*k).toFixed(3)+')';e.style.opacity=k<.12?0:(Math.pow(k,1.15)).toFixed(2);e.style.pointerEvents=k<.3?'none':'';e.classList.toggle('on',Math.abs(a)<A/2)});
+    tk.forEach(function(t,i){var a=((ang+i*A/6)%360+540)%360-180,z=Math.cos(a*c);t.style.transform='translateX('+(Math.sin(a*c)*R*1.02*sens).toFixed(1)+'px)';t.style.opacity=z<.1?0:(z*z*.8).toFixed(2)});
+    var n=((Math.round(-ang/A)%N)+N)%N;if(n!==dern){dern=n;if(dr&&navigator.vibrate)try{navigator.vibrate(5)}catch(e){}}}
+  function but(){return Math.round(ang/A)*A}
+  function pas(){raf=0;if(dr)return;if(Math.abs(v)>.06){ang+=v;v*=.945;if(Math.abs(v)<.9){var b=but();v+=(b-ang)*.018}}else{var d=but()-ang;if(Math.abs(d)<.05){ang=but();v=0;rendu();return}ang+=d*(rm?1:.16);v=0}rendu();raf=requestAnimationFrame(pas)}
+  function va(i){var d=((-i*A-ang)%360+540)%360-180,f=ang+d,s=ang,t0=performance.now();v=0;cancelAnimationFrame(raf);(function g(t){var p=rm?1:Math.min(1,(t-t0)/420),e=1-Math.pow(1-p,3);ang=s+d*e;rendu();if(p<1)raf=requestAnimationFrame(g);else{ang=f;raf=0}})(t0)}
+  nav.addEventListener('pointerdown',function(e){if(e.button)return;dr={x:e.clientX,t:e.timeStamp,id:e.pointerId};bouge=0;v=0;cancelAnimationFrame(raf);raf=0});
+  addEventListener('pointermove',function(e){if(!dr||e.pointerId!==dr.id)return;var dx=e.clientX-dr.x,dt=Math.max(1,e.timeStamp-dr.t);if(!dx)return;bouge+=Math.abs(dx);if(bouge>5&&!nav.hasPointerCapture(e.pointerId))try{nav.setPointerCapture(e.pointerId)}catch(_){}var da=dx*sens*(A/Math.min(128,larg()*.3));ang+=da;v=v*.5+.5*(da*16/dt);dr.x=e.clientX;dr.t=e.timeStamp;rendu()},{passive:true});
+  function fin(e){if(!dr||e.pointerId!==dr.id)return;if(e.timeStamp-dr.t>90)v=0;v=Math.max(-26,Math.min(26,v));dr=null;if(!raf)raf=requestAnimationFrame(pas)}
+  addEventListener('pointerup',fin);addEventListener('pointercancel',fin);
+  nav.addEventListener('click',function(e){var a=e.target.closest('a');if(bouge>5){e.preventDefault();return}if(a&&!a.classList.contains('on')&&e.detail>0){e.preventDefault();va(els.indexOf(a))}},true);
+  nav.addEventListener('wheel',function(e){var d=Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY;e.preventDefault();ang-=d*.12;v=0;rendu();cancelAnimationFrame(raf);raf=requestAnimationFrame(pas)},{passive:false});
+  nav.addEventListener('focusin',function(e){if(e.target.matches(':focus-visible'))va(els.indexOf(e.target))});
+  nav.addEventListener('keydown',function(e){var d=e.key==='ArrowRight'?1:e.key==='ArrowLeft'?-1:0;if(!d)return;e.preventDefault();var n=(els.indexOf(document.activeElement)+d*sens+N)%N;els[n].focus({preventScroll:true});va(n)});
+  addEventListener('resize',rendu);rendu();
+  // logo
+  if(br){var nom=P==='a'?'tefi.la':'tsadik.live';br.setAttribute('aria-label',nom);br.textContent='';var sp=document.createElement('span');sp.className='lg7';sp.textContent=nom;br.appendChild(sp);window.__logo7={el:br,nom:nom,p:P,rm:rm}}
+})();
+
+// Bougies : rangée filmée dans les bandeaux, bougie à allumer sur chaque fiche (compteur gardé par hilloulot.dreamnovamcp.com), son au toucher seulement.
+(function(){
+var B='/img/bougie/',API='https://hilloulot.dreamnovamcp.com/bougie',L=document.documentElement.lang||'fr',RM=matchMedia('(prefers-reduced-motion:reduce)').matches;
+var T={fr:{a:'Allumer une bougie',o:'Votre bougie est allumée',z:'Allumez la première bougie',n:function(n){return n===1?'1 personne a allumé une bougie':n.toLocaleString('fr')+' personnes ont allumé une bougie'},p:'Vous êtes la première personne à allumer une bougie ici',s:'Partager',c:'Lien copié',t:'J’ai allumé une bougie pour '},
+en:{a:'Light a candle',o:'Your candle is lit',z:'Light the first candle',n:function(n){return n===1?'1 person has lit a candle':n.toLocaleString('en')+' people have lit a candle'},p:'You are the first to light a candle here',s:'Share',c:'Link copied',t:'I lit a candle for '},
+he:{a:'הדליקו נר',o:'הנר שלכם דולק',z:'עדיין לא הודלק כאן נר. היו הראשונים להדליק',n:function(n){return n===1?'אדם אחד הדליק נר':n===2?'שני אנשים הדליקו נר':n.toLocaleString('he')+' אנשים הדליקו נר'},p:'אתם הראשונים להדליק כאן נר',s:'שיתוף',c:'הקישור הועתק',t:'הדלקתי נר לכבוד '}}[L]||null;if(!T)return;
+function g(k){try{return localStorage.getItem(k)}catch(e){return null}}function p(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+function E(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x)e.textContent=x;return e}
+function vid(src,poster,c){var v=E('video',c);v.muted=true;v.defaultMuted=true;v.playsInline=true;v.setAttribute('playsinline','');v.preload='none';v.poster=poster;v.src=src;v.setAttribute('aria-hidden','true');v.tabIndex=-1;return v}
+var io='IntersectionObserver'in window?new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){var q=e.target.play();q&&q.catch(function(){})}else e.target.pause()})}):null;
+function boucle(v){v.loop=true;if(io)io.observe(v);else v.autoplay=true}
+// rangée filmée
+document.querySelectorAll('.candles.hc,.candles.icdl').forEach(function(c){c.textContent='';c.classList.add('ra7');if(RM){var i=E('img');i.src=B+'rangee.webp';i.alt='';c.appendChild(i)}else{var v=vid(B+'rangee.mp4',B+'rangee.webp');c.appendChild(v);boucle(v)}});
+// son : souffle d'allumage, et deux notes douces pour la première personne
+var AC;function son(premier){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();AC.resume();var t=AC.currentTime+.02,n=AC.sampleRate*.9|0,b=AC.createBuffer(1,n,AC.sampleRate),d=b.getChannelData(0);for(var i=0;i<n;i++)d[i]=(Math.random()*2-1);
+var s=AC.createBufferSource(),f=AC.createBiquadFilter(),a=AC.createGain();s.buffer=b;f.type='bandpass';f.Q.value=.8;f.frequency.setValueAtTime(260,t);f.frequency.exponentialRampToValueAtTime(1500,t+.16);f.frequency.exponentialRampToValueAtTime(380,t+.85);a.gain.setValueAtTime(.0001,t);a.gain.exponentialRampToValueAtTime(.16,t+.09);a.gain.exponentialRampToValueAtTime(.0001,t+.85);s.connect(f);f.connect(a);a.connect(AC.destination);s.start(t);
+(premier?[523.25,659.25,783.99,1046.5]:[]).forEach(function(h,i){var o=AC.createOscillator(),k=AC.createGain(),u=t+.35+i*.15;o.type='sine';o.frequency.value=h;k.gain.setValueAtTime(.0001,u);k.gain.exponentialRampToValueAtTime(.07,u+.02);k.gain.exponentialRampToValueAtTime(.0001,u+1.5);o.connect(k);k.connect(AC.destination);o.start(u);o.stop(u+1.6)})}catch(e){}}
+window.__son7=son;
+function objet(allumee){var o=E('span','ob7');var i0=E('img','b0');i0.src=B+'bougie_0.webp';i0.alt='';var i1=E('img','b1');i1.src=B+'bougie_1.webp';i1.alt='';o.append(i0,i1);var va,vb;
+ function flamme(){if(RM)return;if(!vb){vb=vid(B+'bougie_b.mp4',B+'bougie_1.webp','vb');o.appendChild(vb);boucle(vb)}}
+ o.allume=function(anime){if(anime&&!RM){va=vid(B+'bougie_a.mp4',B+'bougie_0.webp','va');o.appendChild(va);flamme();o.classList.add('va7');va.onended=function(){o.classList.remove('va7');o.classList.add('on');va.remove()};va.onerror=va.onended;var q=va.play();q&&q.catch(function(){va.onended()})}else{o.classList.add('on');flamme()}};
+ o.eteint=function(){o.classList.remove('on','va7');if(vb){vb.remove();vb=null}};if(allumee)o.allume();return o}
+// grande bougie du jour (accueil, Aujourd'hui) : même objet, même geste
+document.querySelectorAll('.bigcandle').forEach(function(b){var f=b.querySelector('.flame'),s=b.querySelector('.stick');if(!f)return;var o=objet(b.classList.contains('on'));f.replaceWith(o);s&&s.remove();b.classList.add('bc7');var der=b.classList.contains('on');
+ new MutationObserver(function(){var on=b.classList.contains('on');if(on===der)return;der=on;if(on){o.allume(b.matches(':focus,:hover'));}else o.eteint()}).observe(b,{attributes:true,attributeFilter:['class']});b.addEventListener('click',function(){if(b.classList.contains('on'))son()})});
+// bougie d'une fiche
+function vis(){var v=g('vis7');if(!/^[0-9a-f]{32}$/.test(v||'')){v=Array.from(crypto.getRandomValues(new Uint8Array(16)),function(x){return('0'+x.toString(16)).slice(-2)}).join('');p('vis7',v)}return v}
+document.querySelectorAll('.bo7').forEach(function(z){var s=z.dataset.s,k='bo7-'+s,on=g(k)==='1',bt=E('button','bt7');bt.type='button';bt.setAttribute('aria-pressed',on);var o=objet(on),lb=E('span','lb7',on?T.o:T.a);bt.append(o,lb);var n=E('p','nb7');n.setAttribute('aria-live','polite');n.textContent=' ';var sh=E('button','pa7',T.s);sh.type='button';sh.hidden=!on;z.append(bt,n,sh);var N=null;
+ function compte(x){N=x;n.textContent=x?T.n(x):T.z}
+ function envoi(){return fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({s:s,v:vis()})}).then(function(r){if(!r.ok)throw 0;return r.json()})}
+ var dejaVu=false;function charge(){if(dejaVu)return;dejaVu=true;fetch(API+'?s='+encodeURIComponent(s)).then(function(r){return r.ok?r.json():null}).then(function(d){if(d&&N===null)compte(d.n)}).catch(function(){})}charge();
+ bt.addEventListener('click',function(){if(on)return;on=true;bt.setAttribute('aria-pressed','true');lb.textContent=T.o;o.allume(true);son();p(k,'1');sh.hidden=false;
+  envoi().then(function(d){compte(d.n);z.classList.add('mo7');if(d.premier)premier()}).catch(function(){if(N!==null)compte(N+1)})});
+ function premier(){setTimeout(function(){son(true)},900);var c=E('div','co7');c.setAttribute('role','status');c.innerHTML='<svg viewBox="0 0 100 92" aria-hidden="true"><path pathLength="1" d="M50 86C22 66 8 50 8 31 8 17 18 8 30 8c9 0 16 5 20 13C54 13 61 8 70 8c12 0 22 9 22 23 0 19-14 35-42 55Z"/></svg>';c.appendChild(E('p','',T.p));for(var i=0;i<14&&!RM;i++){var e=E('i');e.style.cssText='--x:'+(Math.random()*240-120).toFixed(0)+'px;--y:'+(-60-Math.random()*150).toFixed(0)+'px;--d:'+(.9+Math.random()*.9).toFixed(2)+'s';c.appendChild(e)}z.appendChild(c);setTimeout(function(){c.classList.add('fi')},6500);setTimeout(function(){c.remove()},7600)}
+ sh.addEventListener('click',function(){var d={title:z.dataset.n,text:T.t+z.dataset.n+(N>1?' · '+T.n(N):''),url:location.origin+location.pathname};if(navigator.share)navigator.share(d).catch(function(){});else if(navigator.clipboard)navigator.clipboard.writeText(d.text+' '+d.url).then(function(){sh.textContent=T.c;setTimeout(function(){sh.textContent=T.s},2200)})})});
+// logo en feu des prototypes (lettres composées par nous, feu filmé) : une fois muet à l'arrivée, puis avec le son au premier toucher
+(function(){var l=window.__logo7;if(!l||RM)return;var sp=l.el.querySelector('.lg7');if(!sp)return;function joue(){var v=vid(B+'logo_'+l.p+'.mp4','');v.preload='auto';var c=E('canvas','lgv7'),x=c.getContext('2d',{willReadFrequently:true}),fin=0;c.setAttribute('aria-hidden','true');
+ // le noir devient transparent : l'en-tête isole le mode « écran », un rectangle noir se voyait
+ function trame(){if(fin)return;if(v.readyState>1){if(c.width!==v.videoWidth){c.width=v.videoWidth;c.height=v.videoHeight;sp.appendChild(c);sp.classList.add('fe7')}x.drawImage(v,0,0);var m=x.getImageData(0,0,c.width,c.height),d=m.data;for(var i=0;i<d.length;i+=4){var h=Math.max(d[i],d[i+1],d[i+2]);if(h<9){d[i+3]=0;continue}var k=255/h;d[i]*=k;d[i+1]*=k;d[i+2]*=k;d[i+3]=h}x.putImageData(m,0,0)}requestAnimationFrame(trame)}
+ v.onended=v.onerror=function(){if(fin)return;fin=1;sp.classList.remove('fe7');setTimeout(function(){c.remove()},350)};var q=v.play();q&&q.catch(v.onerror);requestAnimationFrame(trame)}
+ var vu;try{vu=sessionStorage.getItem('fe7');sessionStorage.setItem('fe7','1')}catch(e){}if(!vu){setTimeout(joue,500);addEventListener('pointerdown',function(e){if(e.target.closest&&e.target.closest('a,button,input,select,.roue7'))return;removeEventListener('pointerdown',ar);joue();son()},{once:true});}function ar(){}})();
+})();
+
+// Filtres du calendrier : chaque filtre agit sur tout (grandes lignes illustrées comprises), les jours et les mois vides disparaissent, le nombre est dit, et on voit le résultat tout de suite.
+(function(){var cal=document.getElementById('cal');if(!cal)return;var g=document.querySelector('.chips');if(!g)return;var L=document.documentElement.lang,
+T={fr:function(n){return n?n+(n>1?' dates':' date'):'Aucune date dans cette catégorie pour cette période.'},en:function(n){return n?n+(n>1?' dates':' date'):'No date in this category for this period.'},he:function(n){return n?(n===1?'תאריך אחד':n+' תאריכים'):'אין תאריכים בקטגוריה זו בתקופה זו.'}}[L];
+var m=document.createElement('p');m.className='cf7';m.setAttribute('role','status');cal.before(m);
+function applique(f,voir){var n=0;cal.querySelectorAll('.row').forEach(function(r){r.classList.toggle('hide',f!=='all'&&f!=='hil')});
+ cal.querySelectorAll('.ev[data-c]').forEach(function(e){var h=f!=='all'&&e.dataset.c!==f;e.classList.toggle('hide',h);if(!h)n++});
+ cal.querySelectorAll('.dl').forEach(function(d){d.classList.toggle('hide',!d.querySelector('.ev[data-c]:not(.hide)'))});
+ cal.querySelectorAll('.dbd').forEach(function(d){if(f!=='all')d.open=true;d.classList.toggle('hide',!d.querySelector('.dl:not(.hide)'));var s=d.querySelector('summary');if(s){s.dataset.t=s.dataset.t||s.textContent;s.textContent=f==='all'?s.dataset.t:s.dataset.t.replace(/\d+/,d.querySelectorAll('.dl:not(.hide)').length)}});
+ cal.querySelectorAll('.mblock').forEach(function(b){b.classList.toggle('hide',f!=='all'&&!b.querySelector('.row:not(.hide),.dl:not(.hide)'))});
+ m.textContent=f==='all'?'':T(n);cal.querySelectorAll('.rv').forEach(function(x){x.classList.add('in')});window.ScrollTrigger&&ScrollTrigger.refresh();
+ if(voir){var y=m.getBoundingClientRect().top+scrollY-(document.querySelector('.hdr')||{offsetHeight:70}).offsetHeight-(document.documentElement.classList.contains('pr7b')?90:14);scrollTo({top:y,behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'})}}
+g.querySelectorAll('button').forEach(function(b){b.addEventListener('click',function(){applique(b.dataset.f,b.dataset.f!=='all')})});
+var a=g.querySelector('[aria-pressed=true]');if(a&&a.dataset.f!=='all')applique(a.dataset.f);
 })();
 /* Application installable depuis Chrome (23/11/2026, demande de David). */
 (function(){
